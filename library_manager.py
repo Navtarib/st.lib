@@ -1,37 +1,34 @@
 import streamlit as st
 import pandas as pd
 
-# Set page title
+
 st.title("Personal Library Manager")
 
-# Initialize session state to store library data (persisted across sessions)
 if 'books_df' not in st.session_state:
-    # Check if books data exists, otherwise create an empty DataFrame
+
     st.session_state.books_df = pd.DataFrame(columns=["Title", "Author", "Genre", "Status", "Rating", "Image"])
 
-# Function to add a new book
+
 def add_book(title, author, genre, status, rating, image):
     new_book = pd.DataFrame([[title, author, genre, status, rating, image]], columns=["Title", "Author", "Genre", "Status", "Rating", "Image"])
     st.session_state.books_df = pd.concat([st.session_state.books_df, new_book], ignore_index=True)
 
-# Function to remove a book
 def remove_book(title):
     st.session_state.books_df = st.session_state.books_df[st.session_state.books_df["Title"] != title]
 
-# Function to edit a book
+
 def edit_book(old_title, new_title, new_author, new_genre, new_status, new_rating, new_image):
     st.session_state.books_df.loc[st.session_state.books_df["Title"] == old_title, ["Title", "Author", "Genre", "Status", "Rating", "Image"]] = [new_title, new_author, new_genre, new_status, new_rating, new_image]
 
-# Function to display books with image on the right side
+
 def display_books(books_df):
     if books_df.empty:
         st.write("Your library is empty!")
     else:
         for index, row in books_df.iterrows():
-            # Create columns for the layout
-            col1, col2 = st.columns([2, 1])  # 2/3 for details, 1/3 for image
+         
+            col1, col2 = st.columns([2, 1])  
 
-            # Display book details on the left (col1)
             with col1:
                 st.write(f"**Title:** {row['Title']}")
                 st.write(f"**Author:** {row['Author']}")
@@ -39,20 +36,18 @@ def display_books(books_df):
                 st.write(f"**Status:** {row['Status']}")
                 st.write(f"**Rating:** {get_star_rating(row['Rating'])}")
 
-            # Display image on the right (col2)
+           
             with col2:
                 if row['Image']:
-                    st.image(row['Image'], width=150)  # Adjust image width
-
+                    st.image(row['Image'], width=150)  
             st.write("-" * 50)
 
-# Function to get star rating based on numeric rating
 def get_star_rating(rating):
     full_stars = "⭐" * rating
     empty_stars = "☆" * (5 - rating)
     return full_stars + empty_stars
 
-# Sidebar for actions
+
 st.sidebar.title("Library Actions")
 action = st.sidebar.radio("Choose an action:", ["View Library", "Add Book", "Remove Book", "Edit Book", "Search Library"])
 
